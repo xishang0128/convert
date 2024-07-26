@@ -7,6 +7,8 @@ import (
 	"strings"
 	"sync"
 
+	"convert/output/sing"
+
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 
@@ -98,17 +100,37 @@ func convertIP(cmd *cobra.Command, args []string) error {
 			ipcidrMap := map[string][]string{
 				"payload": cidrs,
 			}
-			ipcidrOut, _ := yaml.Marshal(&ipcidrMap)
-			os.WriteFile(outDir+"/"+code+".yaml", ipcidrOut, 0755)
-			os.WriteFile(outDir+"/"+code+".list", []byte(strings.Join(cidrs, "\n")), 0755)
+			ipcidrOut, err := yaml.Marshal(&ipcidrMap)
+			if err != nil {
+				fmt.Println(code, " coding err: ", err)
+			}
+			err = os.WriteFile(outDir+"/"+code+".yaml", ipcidrOut, 0755)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
+			err = os.WriteFile(outDir+"/"+code+".list", []byte(strings.Join(cidrs, "\n")), 0755)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
+			// meta.SaveMetaRuleSet(ipcidrOut, "ipcidr", "yaml", outDir+"/"+code+".mrs")
 		}
 		for code, cidrs := range classicalCIDRs {
 			classicalMap := map[string][]string{
 				"payload": cidrs,
 			}
-			classicalOut, _ := yaml.Marshal(&classicalMap)
-			os.WriteFile(outDir+"/classical/"+code+".yaml", classicalOut, 0755)
-			os.WriteFile(outDir+"/classical/"+code+".list", []byte(strings.Join(cidrs, "\n")), 0755)
+			classicalOut, err := yaml.Marshal(&classicalMap)
+			if err != nil {
+				fmt.Println(code, " coding err: ", err)
+			}
+			err = os.WriteFile(outDir+"/classical/"+code+".yaml", classicalOut, 0755)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
+			err = os.WriteFile(outDir+"/classical/"+code+".list", []byte(strings.Join(cidrs, "\n")), 0755)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
+			// meta.SaveMetaRuleSet(classicalOut, "classical", "yaml", outDir+"/classical/"+code+".mrs")
 		}
 	case "sing-box":
 		for code, cidrs := range countryCIDRs {
@@ -117,7 +139,10 @@ func convertIP(cmd *cobra.Command, args []string) error {
 					IPCIDR: cidrs,
 				},
 			}
-			SaveRuleSet(ipcidrRule, outDir+"/"+code)
+			err = sing.SaveSingRuleSet(ipcidrRule, outDir+"/"+code)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
 		}
 	}
 	return nil

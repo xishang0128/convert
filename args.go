@@ -1,7 +1,7 @@
 package main
 
 var (
-	inPath string
+	inPath  string
 	outType string
-  outDir string
+	outDir  string
 )

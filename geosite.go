@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"sync"
+
+	"convert/output/meta"
+	"convert/output/sing"
 
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
@@ -159,15 +163,38 @@ func convertSite(cmd *cobra.Command, args []string) error {
 			domainMap := map[string][]string{
 				"payload": domain,
 			}
-			domainOut, _ := yaml.Marshal(&domainMap)
-			os.WriteFile(outDir+"/"+code+".yaml", domainOut, 0755)
-			os.WriteFile(outDir+"/"+code+".list", []byte(strings.Join(domain, "\n")), 0755)
+			domainOut, err := yaml.Marshal(&domainMap)
+			if err != nil {
+				fmt.Println(code, " coding err: ", err)
+			}
+			err = os.WriteFile(outDir+"/"+code+".yaml", domainOut, 0755)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
+			err = os.WriteFile(outDir+"/"+code+".list", []byte(strings.Join(domain, "\n")), 0755)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
+			err = meta.SaveMetaRuleSet(domainOut, "domain", "yaml", outDir+"/"+code+".mrs")
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
 			classicalMap := map[string][]string{
 				"payload": classical[code],
 			}
-			classicalOut, _ := yaml.Marshal(&classicalMap)
-			os.WriteFile(outDir+"/classical/"+code+".yaml", classicalOut, 0755)
-			os.WriteFile(outDir+"/classical/"+code+".list", []byte(strings.Join(classical[code], "\n")), 0755)
+			classicalOut, err := yaml.Marshal(&classicalMap)
+			if err != nil {
+				fmt.Println(code, " coding err: ", err)
+			}
+			err = os.WriteFile(outDir+"/classical/"+code+".yaml", classicalOut, 0755)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
+			err = os.WriteFile(outDir+"/classical/"+code+".list", []byte(strings.Join(classical[code], "\n")), 0755)
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
+			// meta.SaveMetaRuleSet(classicalOut, "classical", "yaml", outDir+"/classical/"+code+".mrs")
 		}
 	case "sing-box":
 		for code, domain := range domainFull {
@@ -179,7 +206,7 @@ func convertSite(cmd *cobra.Command, args []string) error {
 					DomainRegex:   domainRegex[code],
 				},
 			}
-			SaveRuleSet(domainRule, outDir+"/"+code)
+			sing.SaveSingRuleSet(domainRule, outDir+"/"+code)
 		}
 	}
 	return nil

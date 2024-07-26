@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"convert/output/sing"
+
 	"github.com/sagernet/sing-box/option"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -119,7 +121,7 @@ func convertClash(cmd *cobra.Command, args []string) error {
 						DomainRegex:   domainRegex[name],
 					},
 				}
-				SaveRuleSet(domainRule, outDir+"/"+name+"/domain")
+				sing.SaveSingRuleSet(domainRule, outDir+"/"+name+"/domain")
 			}
 			if len(ipCIDR[name]) != 0 {
 				ipRule := []option.DefaultHeadlessRule{
@@ -127,7 +129,7 @@ func convertClash(cmd *cobra.Command, args []string) error {
 						IPCIDR: ipCIDR[name],
 					},
 				}
-				SaveRuleSet(ipRule, outDir+"/"+name+"/ip")
+				sing.SaveSingRuleSet(ipRule, outDir+"/"+name+"/ip")
 			}
 			if len(processName[name]) != 0 || len(packageName[name]) != 0 || len(processPath[name]) != 0 {
 				processRule := []option.DefaultHeadlessRule{
@@ -137,7 +139,7 @@ func convertClash(cmd *cobra.Command, args []string) error {
 						ProcessPath: processPath[name],
 					},
 				}
-				SaveRuleSet(processRule, outDir+"/"+name+"/process")
+				sing.SaveSingRuleSet(processRule, outDir+"/"+name+"/process")
 			}
 			if len(dstPort[name]) != 0 {
 				otherRule := []option.DefaultHeadlessRule{
@@ -145,7 +147,7 @@ func convertClash(cmd *cobra.Command, args []string) error {
 						Port: dstPort[name],
 					},
 				}
-				SaveRuleSet(otherRule, outDir+"/"+name+"/other")
+				sing.SaveSingRuleSet(otherRule, outDir+"/"+name+"/other")
 			}
 			classicalRule := []option.DefaultHeadlessRule{
 				{
@@ -160,7 +162,7 @@ func convertClash(cmd *cobra.Command, args []string) error {
 					Port:          dstPort[name],
 				},
 			}
-			SaveRuleSet(classicalRule, outDir+"/"+name+"/classical")
+			sing.SaveSingRuleSet(classicalRule, outDir+"/"+name+"/classical")
 		}
 	}
 

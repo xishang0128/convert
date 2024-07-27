@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"convert/output/meta"
 	"convert/output/sing"
 
 	"google.golang.org/protobuf/proto"
@@ -112,7 +113,10 @@ func convertIP(cmd *cobra.Command, args []string) error {
 			if err != nil {
 				fmt.Println(code, " output err: ", err)
 			}
-			// meta.SaveMetaRuleSet(ipcidrOut, "ipcidr", "yaml", outDir+"/"+code+".mrs")
+			err = meta.SaveMetaRuleSet(ipcidrOut, "ipcidr", "yaml", outDir+"/"+code+".mrs")
+			if err != nil {
+				fmt.Println(code, " output err: ", err)
+			}
 		}
 		for code, cidrs := range classicalCIDRs {
 			classicalMap := map[string][]string{
